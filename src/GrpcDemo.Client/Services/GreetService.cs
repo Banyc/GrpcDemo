@@ -23,8 +23,12 @@ namespace GrpcDemo.Client.Services
             httpHandler.ServerCertificateCustomValidationCallback =
                 HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
 
-            using var channel = GrpcChannel.ForAddress("https://localhost:5001",
-                new GrpcChannelOptions { HttpHandler = httpHandler });
+            // HTTPS
+            // using var channel = GrpcChannel.ForAddress("https://localhost:5001",
+            //     new GrpcChannelOptions { HttpHandler = httpHandler });
+            // HTTP
+            using var channel = GrpcChannel.ForAddress("http://localhost:5000");
+
             var client = new Greeter.GreeterClient(channel);
             var reply = await client.SayHelloAsync(
                               new HelloRequest { Name = "GreeterClient" });
