@@ -3,6 +3,7 @@ using Grpc.Shared;
 using Grpc.Net.Client;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using System.Net.Http;
 
 namespace GrpcDemo.Client.Services
 {
@@ -17,7 +18,13 @@ namespace GrpcDemo.Client.Services
         // do not follow the instruction of google's
         public async Task SendAsync()
         {
-            using var channel = GrpcChannel.ForAddress("https://localhost:5001");
+            var httpHandler = new HttpClientHandler();
+            // Return `true` to allow certificates that are untrusted/invalid
+            httpHandler.ServerCertificateCustomValidationCallback =
+                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+
+            using var channel = GrpcChannel.ForAddress("https://localhost:5001",
+                new GrpcChannelOptions { HttpHandler = httpHandler });
             var client = new Greeter.GreeterClient(channel);
             var reply = await client.SayHelloAsync(
                               new HelloRequest { Name = "GreeterClient" });
